@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { createClient } from "@supabase/supabase-js";
 import { Link } from "react-router-dom";
+import Login from "../component/Login";
 
 // userId tetap (tidak berubah walau reload)
 function getUserId() {
@@ -30,6 +31,13 @@ export default function App() {
   const [users, setUsers] = useState([]);
   const [chats, setChats] = useState([]);
 
+  function normalizeUsers(a, b) {
+    return {
+      user_1: Math.min(a, b),
+      user_2: Math.max(a, b),
+    };
+  }
+
   async function fetchData() {
     const { data: users } = await supabase
       .from("users")
@@ -42,11 +50,11 @@ export default function App() {
           .select(
             `
     *,
-    pengirim:users!chats_user_1_fkey (
+    user_1:users!chats_user_1_fkey (
       user_id,
       username
     ),
-    penerima:users!chats_user_2_fkey (
+    user_2:users!chats_user_2_fkey (
       user_id,
       username
     )
@@ -54,11 +62,10 @@ export default function App() {
           )
           .or(`user_1.eq.${val.data.user_id}, user_2.eq.${val.data.user_id}`)
           .then((chats) => {
-            console.log(chats);
             const coba = chats.data.filter((chat) => {
               return (
-                chat?.pengirim?.username === userName ||
-                chat?.penerima?.username === userName
+                chat?.user_1?.username === userName ||
+                chat?.user_2?.username === userName
               );
             });
             setChats(coba);
@@ -72,7 +79,7 @@ export default function App() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [loggedIn]);
 
   // CONNECT + REGISTER (INI KUNCI)
   useEffect(() => {
@@ -88,10 +95,9 @@ export default function App() {
     });
 
     socketRef.current.on("receive_private_message", (data) => {
-      setMessages((prev) => [...prev, data]);
+      fetchData();
+      // setMessages((prev) => [...prev, data]);
     });
-
-    console.log(users);
 
     return () => socketRef.current.disconnect();
   }, [userName, users]);
@@ -100,9 +106,15 @@ export default function App() {
     if (!userName.trim()) return;
     localStorage.setItem("userName", userName);
 
-    await supabase
-      .from("users")
-      .insert([{ username: userName, socket_id: userId.current }]);
+    await supabase.from("users").upsert(
+      {
+        username: userName,
+        socket_id: userId.current,
+      },
+      {
+        onConflict: "username",
+      },
+    );
 
     setLoggedIn(true);
   };
@@ -110,23 +122,11 @@ export default function App() {
   // LOGIN SCREEN
   if (!loggedIn) {
     return (
-      <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
-        <div className="bg-zinc-800 p-4 rounded-xl w-80">
-          <h2 className="text-white text-lg mb-2">Login</h2>
-          <input
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            placeholder="Username"
-            className="w-full mb-2 bg-zinc-700 text-white px-3 py-2 rounded"
-          />
-          <button
-            onClick={login}
-            className="w-full bg-green-600 py-2 rounded text-white"
-          >
-            Masuk
-          </button>
-        </div>
-      </div>
+      <Login
+        goLogin={login}
+        handeleChange={(e) => setUserName(e.target.value)}
+        userName={userName}
+      />
     );
   }
 
@@ -156,7 +156,9 @@ export default function App() {
                 <div className="bg-zinc-600 border-2 border-dashed rounded-xl w-16 h-16" />
                 <div>
                   <p className="font-medium text-white">
-                    {chat.pengirim?.username}
+                    {chat.user_1?.username == userName
+                      ? chat.user_2?.username
+                      : chat.user_1?.username}
                   </p>
                   <p className="text-xs text-zinc-300">{chat.pesan_terakhir}</p>
                 </div>
@@ -179,6 +181,9 @@ export default function App() {
             Kirim
           </button>
         </div> */}
+        <button className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg">
+          Kirim
+        </button>
       </div>
     </div>
   );

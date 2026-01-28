@@ -130,9 +130,7 @@ export default function App() {
             <i class="bi bi-chat-text-fill"></i>
           </Link>
           <div>
-            <h2 className="text-white text-xl font-semibold mb-1">
-              Private Chat
-            </h2>
+            <h2 className="text-white text-xl font-semibold mb-1">Hush</h2>
             <p className="text-xs text-zinc-400 mb-2">
               Login sebagai: <span className="text-white">{userName}</span>
             </p>

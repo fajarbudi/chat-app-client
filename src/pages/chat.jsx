@@ -123,7 +123,7 @@ export default function App() {
 
   // CONNECT + REGISTER (INI KUNCI)
   useEffect(() => {
-    socketRef.current = io("http://localhost:3001");
+    socketRef.current = io("https://hush-chat-server.vercel.app:3001");
 
     socketRef.current.on("connect", () => {
       if (userName) {

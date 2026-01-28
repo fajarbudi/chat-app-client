@@ -1,8 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { use, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function UserList() {
+  let navigate = useNavigate();
   const [userName, setUserName] = useState(
     localStorage.getItem("userName") || "",
   );
@@ -14,7 +15,10 @@ export default function UserList() {
   const [search, setSearch] = useState("");
 
   const fetchData = async () => {
-    const { data: users } = await supabase.from("users").select("*");
+    const { data: users } = await supabase
+      .from("users")
+      .select("*")
+      .neq("username", userName);
 
     setUsers(users);
   };
@@ -22,6 +26,48 @@ export default function UserList() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const timerId = setTimeout(async () => {
+      const { data: users } = await supabase
+        .from("users")
+        .select("*")
+        .neq("username", userName)
+        .like("username", `%${search}%`);
+      setUsers(users);
+    }, 500);
+
+    //Cleanup
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [search]);
+
+  const normalizeUsers = (a, b) => {
+    return {
+      user_1: Math.min(a, b),
+      user_2: Math.max(a, b),
+    };
+  };
+
+  const goChat = async (user) => {
+    const { data: userLogin } = await supabase
+      .from("users")
+      .select("*")
+      .eq("username", userName)
+      .single();
+    const { user_1, user_2 } = normalizeUsers(userLogin.user_id, user.user_id);
+
+    await supabase
+      .from("chats")
+      .upsert({ user_1, user_2 }, { onConflict: "user_1,user_2" })
+      .select()
+      .single()
+      .then((val) => {
+        navigate(`/chat/${val.data.chat_id}`);
+      });
+  };
+
   return (
     <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
       <div className="w-full max-w-sm bg-zinc-800 rounded-xl p-4 shadow-lg">
@@ -48,20 +94,16 @@ export default function UserList() {
         </div>
 
         <div className="h-96 border border-zinc-500 rounded-lg p-3 overflow-y-auto no-scrollbar">
-          {users.map((chat) => (
-            <Link to={`/chat/${chat.chat_id}`}>
+          {users.map((user) => (
+            <div onClick={() => goChat(user)}>
               <div className="flex items-center gap-2 mb-2 p-2 bg-zinc-700 rounded-lg">
                 <div className="bg-zinc-600 border-2 border-dashed rounded-xl w-16 h-16" />
                 <div>
-                  <p className="font-medium text-white">
-                    {chat.user_1?.username == userName
-                      ? chat.user_2?.username
-                      : chat.user_1?.username}
-                  </p>
-                  <p className="text-xs text-zinc-300">{chat.pesan_terakhir}</p>
+                  <p className="font-medium text-white">{user.username}</p>
+                  <p className="text-xs text-zinc-300">{user.socket_id}</p>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
 

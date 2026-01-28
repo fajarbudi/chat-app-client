@@ -123,7 +123,7 @@ export default function App() {
 
   // CONNECT + REGISTER (INI KUNCI)
   useEffect(() => {
-    socketRef.current = io("https://hush-chat-server.vercel.app:3001");
+    socketRef.current = io("https://hush-chat-server.vercel.app");
 
     socketRef.current.on("connect", () => {
       if (userName) {
@@ -198,101 +198,156 @@ export default function App() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [pesans]);
 
-  // LOGIN SCREEN
-  if (!loggedIn) {
-    return (
-      <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
-        <div className="bg-zinc-800 p-4 rounded-xl w-80">
-          <h2 className="text-white text-lg mb-2">Login</h2>
-          <input
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            placeholder="Username"
-            className="w-full mb-2 bg-zinc-700 text-white px-3 py-2 rounded"
-          />
-          <button
-            onClick={login}
-            className="w-full bg-green-600 py-2 rounded text-white"
-          >
-            Masuk
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // CHAT SCREEN
   return (
-    <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
-      <div className="w-full max-w-sm bg-zinc-800 rounded-xl p-4 shadow-lg">
-        {/* <h2 className="text-white text-xl font-semibold mb-1">
-          💬 Private Chat {id}
-        </h2> */}
+    // <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
+    //   <div className="w-full max-w-sm bg-zinc-800 rounded-xl p-4 shadow-lg">
+    //     {/* <h2 className="text-white text-xl font-semibold mb-1">
+    //       💬 Private Chat {id}
+    //     </h2> */}
 
-        <div className="flex mb-3 flex-row items-center">
-          <Link to="/" className="text-white text-2xl me-1">
-            <i class="bi bi-caret-left-fill"></i>
-          </Link>
-          <div className="bg-zinc-600 border-2 border-dashed border-zinc-300 rounded-lg w-14 h-14 flex flex-row justify-center items-center me-2">
-            <p className="text-zinc-400 text-3xl">
-              {receiver?.username?.charAt(0).toUpperCase()}
-            </p>
+    //     <div className="flex mb-3 flex-row items-center">
+    //       <Link to="/" className="text-white text-2xl me-1">
+    //         <i class="bi bi-caret-left-fill"></i>
+    //       </Link>
+    //       <div className="bg-zinc-600 border-2 border-dashed border-zinc-300 rounded-lg w-14 h-14 flex flex-row justify-center items-center me-2">
+    //         <p className="text-zinc-400 text-3xl">
+    //           {receiver?.username?.charAt(0).toUpperCase()}
+    //         </p>
+    //       </div>
+    //       <div>
+    //         <h1 className="text-white text-xl">{receiver.username}</h1>
+    //         <p className="text-sm text-white">Online</p>
+    //       </div>
+    //     </div>
+
+    //     {/* <p className="text-xs text-zinc-400 mb-2">
+    //       Login sebagai: <span className="text-white">{userName}</span>
+    //     </p> */}
+
+    //     {/* <h1 className="text-white text-xl text-center">{receiver.username}</h1> */}
+
+    //     {/* <input
+    //       value={targetUserName}
+    //       onChange={(e) => setTargetUserName(e.target.value)}
+    //       placeholder="Chat ke username..."
+    //       className="w-full mb-3 bg-zinc-700 text-white px-3 py-2 rounded-lg"
+    //     /> */}
+
+    //     <div className="h-96 overflow-y-auto border border-zinc-500 rounded-lg p-3 flex flex-col gap-2 mb-3 bg-zinc-700 no-scrollbar">
+    //       {pesans?.map((msg, i) => {
+    //         const isMe = msg.pengirim?.username === userName;
+    //         return (
+    //           <div
+    //             key={i}
+    //             className={`max-w-[75%] px-3 py-2 rounded-lg text-sm text-white
+    //               ${
+    //                 isMe
+    //                   ? "self-end bg-green-600 rounded-br-none"
+    //                   : "self-start bg-zinc-500 rounded-bl-none"
+    //               }
+    //             `}
+    //           >
+    //             <span className="text-xs opacity-70">
+    //               {msg.pengirim?.username}
+    //             </span>
+    //             <br />
+    //             {msg.message}
+    //           </div>
+    //         );
+    //       })}
+    //       {/* anchor di paling bawah */}
+    //       <div ref={bottomRef} />
+    //     </div>
+
+    //     <div className="flex gap-2">
+    //       <input
+    //         value={message}
+    //         onChange={(e) => setMessage(e.target.value)}
+    //         placeholder="Ketik pesan..."
+    //         className="flex-1 bg-zinc-700 text-white px-3 py-2 rounded-lg"
+    //       />
+    //       <button
+    //         onClick={sendMessage}
+    //         className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg"
+    //       >
+    //         Kirim
+    //       </button>
+    //     </div>
+    //   </div>
+    // </div>
+
+    <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+      <div
+        className="w-[360px] h-[50vh] flex flex-col rounded-2xl
+                      bg-neutral-800/90 backdrop-blur-xl
+                      border border-white/10 shadow-2xl"
+      >
+        {/* HEADER */}
+        <div className="flex items-center gap-3 px-3 py-2 border-b border-white/10">
+          <button className="text-neutral-400 hover:text-white transition">
+            ←
+          </button>
+
+          <div
+            className="h-9 w-9 rounded-full bg-neutral-700
+                          flex items-center justify-center text-white font-semibold"
+          >
+            {receiver?.username?.charAt(0).toUpperCase()}
           </div>
-          <div>
-            <h1 className="text-white text-xl">{receiver.username}</h1>
-            <p className="text-sm text-white">Online</p>
+
+          <div className="flex-1">
+            <p className="text-sm text-white font-medium">
+              {receiver.username}
+            </p>
+            <p className="text-xs text-green-400">Online</p>
           </div>
         </div>
 
-        {/* <p className="text-xs text-zinc-400 mb-2">
-          Login sebagai: <span className="text-white">{userName}</span>
-        </p> */}
-
-        {/* <h1 className="text-white text-xl text-center">{receiver.username}</h1> */}
-
-        {/* <input
-          value={targetUserName}
-          onChange={(e) => setTargetUserName(e.target.value)}
-          placeholder="Chat ke username..."
-          className="w-full mb-3 bg-zinc-700 text-white px-3 py-2 rounded-lg"
-        /> */}
-
-        <div className="h-96 overflow-y-auto border border-zinc-500 rounded-lg p-3 flex flex-col gap-2 mb-3 bg-zinc-700 no-scrollbar">
-          {pesans?.map((msg, i) => {
+        {/* MESSAGE LIST */}
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2 no-scrollbar">
+          {pesans.map((msg) => {
             const isMe = msg.pengirim?.username === userName;
             return (
               <div
-                key={i}
-                className={`max-w-[75%] px-3 py-2 rounded-lg text-sm text-white
+                key={msg.id}
+                className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm leading-relaxed
                   ${
                     isMe
-                      ? "self-end bg-green-600 rounded-br-none"
-                      : "self-start bg-zinc-500 rounded-bl-none"
-                  }
-                `}
-              >
-                <span className="text-xs opacity-70">
-                  {msg.pengirim?.username}
-                </span>
-                <br />
-                {msg.message}
+                      ? "bg-gradient-to-r from-green-500 to-emerald-600 text-black rounded-br-md"
+                      : "bg-neutral-700 text-white rounded-bl-md"
+                  }`}
+                >
+                  {msg.message}
+                </div>
               </div>
             );
           })}
-          {/* anchor di paling bawah */}
           <div ref={bottomRef} />
         </div>
 
-        <div className="flex gap-2">
+        {/* INPUT */}
+        <div className="flex items-center gap-2 p-2 border-t border-white/10">
           <input
+            type="text"
+            placeholder="Ketik pesan..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Ketik pesan..."
-            className="flex-1 bg-zinc-700 text-white px-3 py-2 rounded-lg"
+            onKeyDown={(e) => e.key === "Enter" && sendMessage}
+            className="flex-1 bg-neutral-700 rounded-xl px-3 py-2 text-sm
+                       text-white placeholder-neutral-400
+                       focus:outline-none focus:ring-2
+                       focus:ring-green-500/40"
           />
+
           <button
             onClick={sendMessage}
-            className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg"
+            className="px-4 py-2 rounded-xl bg-green-500 text-black
+                       font-medium hover:brightness-110
+                       active:scale-95 transition"
           >
             Kirim
           </button>

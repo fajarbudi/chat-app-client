@@ -71,15 +71,21 @@ export default function UserList() {
   return (
     <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
       <div className="w-full max-w-sm bg-zinc-800 rounded-xl p-4 shadow-lg">
-        <h2 className="text-white text-xl font-semibold mb-1">
-          💬 Private Chat
-        </h2>
+        <div className="flex flex-row items-center">
+          <Link to="/" className="text-white text-2xl me-1">
+            <i class="bi bi-caret-left-fill"></i>
+          </Link>
+          <div>
+            <h2 className="text-white text-xl font-semibold mb-1">
+              Daftar User
+            </h2>
+            <p className="text-xs text-zinc-400 mb-2">
+              Login sebagai: <span className="text-white">{userName}</span>
+            </p>
+          </div>
+        </div>
 
-        <p className="text-xs text-zinc-400 mb-2">
-          Login sebagai: <span className="text-white">{userName}</span>
-        </p>
-
-        <div className="flex flex-row items-center bg-zinc-700 rounded-lg gap-4 pe-3 mb-3">
+        <div className="flex flex-row items-center bg-zinc-700 rounded-lg gap-4 pe-3 mb-4">
           <input
             value={search}
             onChange={(e) => {

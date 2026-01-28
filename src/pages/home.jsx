@@ -132,14 +132,20 @@ export default function App() {
   // CHAT SCREEN
   return (
     <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
-      <div className="w-full max-w-sm bg-zinc-800 rounded-xl p-4 shadow-lg">
-        <h2 className="text-white text-xl font-semibold mb-1">
-          💬 Private Chat
-        </h2>
-
-        <p className="text-xs text-zinc-400 mb-2">
-          Login sebagai: <span className="text-white">{userName}</span>
-        </p>
+      <div className="w-full max-w-sm bg-zinc-800 rounded-xl p-4 shadow-lg relative">
+        <div className="flex flex-row items-center">
+          <Link to="/" className="text-white text-2xl me-2">
+            <i class="bi bi-chat-text-fill"></i>
+          </Link>
+          <div>
+            <h2 className="text-white text-xl font-semibold mb-1">
+              Private Chat
+            </h2>
+            <p className="text-xs text-zinc-400 mb-2">
+              Login sebagai: <span className="text-white">{userName}</span>
+            </p>
+          </div>
+        </div>
         {/* 
         <input
           value={targetUserName}
@@ -182,9 +188,9 @@ export default function App() {
         </div> */}
         <Link
           to={"/userList"}
-          className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg ms-auto"
+          className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg ms-auto absolute bottom-6 right-4"
         >
-          Kirim
+          <i class="bi bi-plus-lg"></i>
         </Link>
       </div>
     </div>

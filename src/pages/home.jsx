@@ -17,26 +17,17 @@ function getUserId() {
 export default function App() {
   const socketRef = useRef(null);
   const userId = useRef(getUserId());
-
   const [userName, setUserName] = useState(
     localStorage.getItem("userName") || "",
   );
-  const [loggedIn, setLoggedIn] = useState(!!userName);
 
   const supabase = createClient(
     import.meta.env.VITE_SUPABASE_URL,
     import.meta.env.VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
   );
-
+  const [loggedIn, setLoggedIn] = useState(!!userName);
   const [users, setUsers] = useState([]);
   const [chats, setChats] = useState([]);
-
-  function normalizeUsers(a, b) {
-    return {
-      user_1: Math.min(a, b),
-      user_2: Math.max(a, b),
-    };
-  }
 
   async function fetchData() {
     const { data: users } = await supabase
@@ -61,6 +52,7 @@ export default function App() {
   `,
           )
           .or(`user_1.eq.${val.data.user_id}, user_2.eq.${val.data.user_id}`)
+          .order("updated_at", { ascending: false })
           .then((chats) => {
             const coba = chats.data.filter((chat) => {
               return (
@@ -132,7 +124,7 @@ export default function App() {
   // CHAT SCREEN
   return (
     <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
-      <div className="w-full max-w-sm bg-zinc-800 rounded-xl p-4 shadow-lg relative">
+      <div className="w-full max-w-sm bg-zinc-800 rounded-xl p-4 shadow-lg ">
         <div className="flex flex-row items-center">
           <Link to="/" className="text-white text-2xl me-2">
             <i class="bi bi-chat-text-fill"></i>
@@ -146,19 +138,18 @@ export default function App() {
             </p>
           </div>
         </div>
-        {/* 
-        <input
-          value={targetUserName}
-          onChange={(e) => setTargetUserName(e.target.value)}
-          placeholder="Chat ke username..."
-          className="w-full mb-3 bg-zinc-700 text-white px-3 py-2 rounded-lg"
-        /> */}
 
-        <div className="h-96 overflow-y-auto">
+        <div className="h-96 border border-zinc-500 rounded-lg p-3 overflow-y-auto no-scrollbar relative">
           {chats.map((chat) => (
             <Link to={`/chat/${chat.chat_id}`}>
-              <div className="flex items-center gap-2 mb-2 p-2 bg-zinc-700 rounded-lg">
-                <div className="bg-zinc-600 border-2 border-dashed rounded-xl w-16 h-16" />
+              <div className="flex items-center gap-2 mb-2 p-2 bg-zinc-600 rounded-lg">
+                <div className="bg-zinc-700 border-2 border-dashed border-zinc-300 rounded-lg w-16 h-16 flex flex-row justify-center items-center">
+                  <p className="text-zinc-400 text-3xl">
+                    {chat.user_1?.username == userName
+                      ? chat.user_2?.username.charAt(0).toUpperCase()
+                      : chat.user_1?.username.charAt(0).toUpperCase()}
+                  </p>
+                </div>
                 <div>
                   <p className="font-medium text-white">
                     {chat.user_1?.username == userName
@@ -170,28 +161,14 @@ export default function App() {
               </div>
             </Link>
           ))}
-        </div>
 
-        {/* <div className="flex gap-2">
-          <input
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Ketik pesan..."
-            className="flex-1 bg-zinc-700 text-white px-3 py-2 rounded-lg"
-          />
-          <button
-            onClick={sendMessage}
-            className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg"
+          <Link
+            to={"/userList"}
+            className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg ms-auto absolute bottom-6 right-4"
           >
-            Kirim
-          </button>
-        </div> */}
-        <Link
-          to={"/userList"}
-          className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg ms-auto absolute bottom-6 right-4"
-        >
-          <i class="bi bi-plus-lg"></i>
-        </Link>
+            <i class="bi bi-plus-lg"></i>
+          </Link>
+        </div>
       </div>
     </div>
   );

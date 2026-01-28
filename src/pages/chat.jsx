@@ -185,12 +185,18 @@ export default function App() {
       .from("chats")
       .update({
         pesan_terakhir: message,
+        updated_at: new Date().toISOString(),
       })
       .eq("chat_id", id)
       .select();
 
     setMessage("");
   };
+
+  const bottomRef = useRef(null);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [pesans]);
 
   // LOGIN SCREEN
   if (!loggedIn) {
@@ -227,7 +233,11 @@ export default function App() {
           <Link to="/" className="text-white text-2xl me-1">
             <i class="bi bi-caret-left-fill"></i>
           </Link>
-          <div className="bg-zinc-600 border-2 border-dashed rounded-xl w-14 h-14 me-2" />
+          <div className="bg-zinc-600 border-2 border-dashed border-zinc-300 rounded-lg w-14 h-14 flex flex-row justify-center items-center me-2">
+            <p className="text-zinc-400 text-3xl">
+              {receiver?.username?.charAt(0).toUpperCase()}
+            </p>
+          </div>
           <div>
             <h1 className="text-white text-xl">{receiver.username}</h1>
             <p className="text-sm text-white">Online</p>
@@ -269,6 +279,8 @@ export default function App() {
               </div>
             );
           })}
+          {/* anchor di paling bawah */}
+          <div ref={bottomRef} />
         </div>
 
         <div className="flex gap-2">

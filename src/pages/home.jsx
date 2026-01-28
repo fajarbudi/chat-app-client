@@ -96,7 +96,6 @@ export default function App() {
 
     socketRef.current.on("receive_private_message", (data) => {
       fetchData();
-      // setMessages((prev) => [...prev, data]);
     });
 
     return () => socketRef.current.disconnect();
@@ -181,9 +180,12 @@ export default function App() {
             Kirim
           </button>
         </div> */}
-        <button className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg">
+        <Link
+          to={"/userList"}
+          className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg ms-auto"
+        >
           Kirim
-        </button>
+        </Link>
       </div>
     </div>
   );

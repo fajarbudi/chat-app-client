@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { createClient } from "@supabase/supabase-js";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 // userId tetap (tidak berubah walau reload)
 function getUserId() {
@@ -181,6 +181,14 @@ export default function App() {
         fetchMessage();
       });
 
+    await supabase
+      .from("chats")
+      .update({
+        pesan_terakhir: message,
+      })
+      .eq("chat_id", id)
+      .select();
+
     setMessage("");
   };
 
@@ -211,22 +219,35 @@ export default function App() {
   return (
     <div className="min-h-screen bg-zinc-900 flex items-center justify-center">
       <div className="w-full max-w-sm bg-zinc-800 rounded-xl p-4 shadow-lg">
-        <h2 className="text-white text-xl font-semibold mb-1">
+        {/* <h2 className="text-white text-xl font-semibold mb-1">
           💬 Private Chat {id}
-        </h2>
+        </h2> */}
 
-        <p className="text-xs text-zinc-400 mb-2">
+        <div className="flex mb-3 flex-row items-center">
+          <Link to="/" className="text-white text-2xl me-1">
+            <i class="bi bi-caret-left-fill"></i>
+          </Link>
+          <div className="bg-zinc-600 border-2 border-dashed rounded-xl w-14 h-14 me-2" />
+          <div>
+            <h1 className="text-white text-xl">{receiver.username}</h1>
+            <p className="text-sm text-white">Online</p>
+          </div>
+        </div>
+
+        {/* <p className="text-xs text-zinc-400 mb-2">
           Login sebagai: <span className="text-white">{userName}</span>
-        </p>
+        </p> */}
 
-        <input
+        {/* <h1 className="text-white text-xl text-center">{receiver.username}</h1> */}
+
+        {/* <input
           value={targetUserName}
           onChange={(e) => setTargetUserName(e.target.value)}
           placeholder="Chat ke username..."
           className="w-full mb-3 bg-zinc-700 text-white px-3 py-2 rounded-lg"
-        />
+        /> */}
 
-        <div className="h-96 overflow-y-auto border border-zinc-700 rounded-lg p-3 flex flex-col gap-2 mb-3">
+        <div className="h-96 overflow-y-auto border border-zinc-500 rounded-lg p-3 flex flex-col gap-2 mb-3 bg-zinc-700 no-scrollbar">
           {pesans?.map((msg, i) => {
             const isMe = msg.pengirim?.username === userName;
             return (
@@ -236,7 +257,7 @@ export default function App() {
                   ${
                     isMe
                       ? "self-end bg-green-600 rounded-br-none"
-                      : "self-start bg-zinc-700 rounded-bl-none"
+                      : "self-start bg-zinc-500 rounded-bl-none"
                   }
                 `}
               >

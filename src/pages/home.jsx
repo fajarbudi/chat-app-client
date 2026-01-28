@@ -42,19 +42,17 @@ export default function App() {
           .select(
             `
     *,
-    pengirim:users!pesan_pengirim_id_fkey (
+    pengirim:users!chats_user_1_fkey (
       user_id,
       username
     ),
-    penerima:users!pesan_penerima_id_fkey (
+    penerima:users!chats_user_2_fkey (
       user_id,
       username
     )
   `,
           )
-          .or(
-            `pengirim_id.eq.${val.data.user_id}, penerima_id.eq.${val.data.user_id}`,
-          )
+          .or(`user_1.eq.${val.data.user_id}, user_2.eq.${val.data.user_id}`)
           .then((chats) => {
             console.log(chats);
             const coba = chats.data.filter((chat) => {

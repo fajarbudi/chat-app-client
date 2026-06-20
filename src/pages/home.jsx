@@ -18,6 +18,7 @@ function getUserId() {
 export default function App() {
   const socketRef = useRef(null);
   const userId = useRef(getUserId());
+  const socketConection = import.meta.env.VITE_SOCKET_CONNECTION;
   const [userName, setUserName] = useState(
     localStorage.getItem("userName") || "",
   );
@@ -76,7 +77,7 @@ export default function App() {
 
   // CONNECT + REGISTER (INI KUNCI)
   useEffect(() => {
-    socketRef.current = io("http://localhost:3001");
+    socketRef.current = io(socketConection);
 
     socketRef.current.on("connect", () => {
       if (userName) {
@@ -192,7 +193,7 @@ export default function App() {
           <div className="flex-1">
             <h1 className="text-white font-semibold leading-tight">Hush</h1>
             <p className="text-xs text-neutral-400">
-              Login sebagai <span className="text-green-400">fajar</span>
+              Login sebagai <span className="text-green-400">{userName}</span>
             </p>
           </div>
         </div>

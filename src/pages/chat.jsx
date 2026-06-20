@@ -17,6 +17,7 @@ export default function App() {
   const { id } = useParams();
   const socketRef = useRef(null);
   const userId = useRef(getUserId());
+  const socketConection = import.meta.env.VITE_SOCKET_CONNECTION;
 
   const [userName, setUserName] = useState(
     localStorage.getItem("userName") || "",
@@ -123,7 +124,11 @@ export default function App() {
 
   // CONNECT + REGISTER (INI KUNCI)
   useEffect(() => {
-    socketRef.current = io("https://hush-chat-server.vercel.app");
+    socketRef.current = io(socketConection, {
+extraHeaders: {
+    "ngrok-skip-browser-warning": "true"
+  }          // Mencegah upgrade dari polling ke websocket
+});
 
     socketRef.current.on("connect", () => {
       if (userName) {
@@ -285,9 +290,9 @@ export default function App() {
       >
         {/* HEADER */}
         <div className="flex items-center gap-3 px-3 py-2 border-b border-white/10">
-          <button className="text-neutral-400 hover:text-white transition">
+          <Link className="text-neutral-400 hover:text-white transition" to={'/'}>
             ←
-          </button>
+          </Link>
 
           <div
             className="h-9 w-9 rounded-full bg-neutral-700

@@ -77,7 +77,11 @@ export default function App() {
 
   // CONNECT + REGISTER (INI KUNCI)
   useEffect(() => {
-    socketRef.current = io(socketConection);
+    socketRef.current = io(socketConection, {
+      extraHeaders: {
+        "ngrok-skip-browser-warning": "true",
+      }, // Mencegah upgrade dari polling ke websocket
+    });
 
     socketRef.current.on("connect", () => {
       if (userName) {
